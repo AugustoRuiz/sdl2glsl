@@ -16,4 +16,6 @@
 #else
 #include <OpenGL/gl.h>
 #endif //!ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
+#else
+#include <SDL2/SDL_opengl.h>
 #endif
