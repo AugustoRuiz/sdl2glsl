@@ -17,6 +17,46 @@ struct sprite {
 
 const int MAX_SPRITES = 20;
 
+#ifndef __APPLE__
+
+// I'm avoiding the use of GLEW or some extensions handler, but that 
+// doesn't mean you should...
+PFNGLCREATESHADERPROC glCreateShader;
+PFNGLSHADERSOURCEPROC glShaderSource;
+PFNGLCOMPILESHADERPROC glCompileShader;
+PFNGLGETSHADERIVPROC glGetShaderiv;
+PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+PFNGLDELETESHADERPROC glDeleteShader;
+PFNGLATTACHSHADERPROC glAttachShader;
+PFNGLCREATEPROGRAMPROC glCreateProgram;
+PFNGLLINKPROGRAMPROC glLinkProgram;
+PFNGLVALIDATEPROGRAMPROC glValidateProgram;
+PFNGLGETPROGRAMIVPROC glGetProgramiv;
+PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
+PFNGLUSEPROGRAMPROC glUseProgram;
+
+bool initGLExtensions() {
+	glCreateShader = (PFNGLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
+	glShaderSource = (PFNGLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
+	glCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
+	glGetShaderiv = (PFNGLGETSHADERIVPROC)SDL_GL_GetProcAddress("glGetShaderiv");
+	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)SDL_GL_GetProcAddress("glGetShaderInfoLog");
+	glDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
+	glAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
+	glCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
+	glLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
+	glValidateProgram = (PFNGLVALIDATEPROGRAMPROC)SDL_GL_GetProcAddress("glValidateProgram");
+	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)SDL_GL_GetProcAddress("glGetProgramiv");
+	glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)SDL_GL_GetProcAddress("glGetProgramInfoLog");
+	glUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
+
+	return glCreateShader && glShaderSource && glCompileShader && glGetShaderiv && 
+		glGetShaderInfoLog && glDeleteShader && glAttachShader && glCreateProgram &&
+		glLinkProgram && glValidateProgram && glGetProgramiv && glGetProgramInfoLog &&
+		glUseProgram;
+}
+
+#endif
 
 GLuint compileShader(const char* source, GLuint shaderType) {
 	std::cout << "Compilando shader:" << std::endl << source << std::endl;
@@ -139,13 +179,15 @@ void presentBackBuffer(SDL_Renderer *renderer, SDL_Window* win, SDL_Texture* bac
 int main(int argc, char **argv){
 	GLuint programId;
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+	if (SDL_Init(SDL_INIT_EVERYTHING | SDL_VIDEO_OPENGL) != 0){
 		std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
 		return 1;
 	}
 
 	SDL_Window *win = SDL_CreateWindow("Custom shader with SDL2 renderer!", SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, 0);
+
+	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
 
 	SDL_Renderer *renderer = SDL_CreateRenderer(win, -1,
 		SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -155,6 +197,14 @@ int main(int argc, char **argv){
 
 	if(!strncmp(rendererInfo.name, "opengl", 6)) {
 		std::cout << "Es OpenGL!" << std::endl;
+#ifndef __APPLE__
+		// If you want to use GLEW or some other GL extension handler, do it here!
+		if (!initGLExtensions()) {
+			std::cout << "Couldn't init GL extensions!" << std::endl;
+			SDL_Quit();
+			exit(-1);
+		}
+#endif
 		// Compilar el shader y dejarlo listo para usar.
 		programId = compileProgram("std.vertex", "crt.fragment");
 		std::cout << "programId = " << programId << std::endl;
@@ -202,7 +252,7 @@ int main(int argc, char **argv){
 				spr->vx *= -1;
 			}
 			if(spr->x > WORLD_WIDTH - targetRect.w) {
-				spr->x = WORLD_WIDTH - targetRect.w;
+				spr->x = (float) (WORLD_WIDTH - targetRect.w);
 				spr->vx *= -1;
 			}
 			spr->y += spr->vy;
@@ -211,7 +261,7 @@ int main(int argc, char **argv){
 				spr->vy *= -1;
 			}
 			if(spr->y > WORLD_HEIGHT - targetRect.h) {
-				spr->y = WORLD_HEIGHT - targetRect.h;
+				spr->y = (float) (WORLD_HEIGHT - targetRect.h);
 				spr->vy *= -1;
 			}
 			
