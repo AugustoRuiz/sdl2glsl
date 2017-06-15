@@ -5,8 +5,8 @@
 const int WIN_WIDTH = 640;
 const int WIN_HEIGHT = 480;
 
-const int WORLD_WIDTH = 160;
-const int WORLD_HEIGHT = 120;
+const int WORLD_WIDTH = 320;
+const int WORLD_HEIGHT = 240;
 
 struct sprite {
 	float x;

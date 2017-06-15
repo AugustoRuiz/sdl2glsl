@@ -35,9 +35,9 @@ vec2 warp=vec2(1.0/32.0,1.0/24.0);
 
 // Amount of shadow mask.
 float maskDark=1.0;
-float maskLight=1.0;
+float maskLight=1.5;
 
-vec2 res = vec2(640.0,480.0)/2.0;
+vec2 res = vec2(640.0,480.0); // /3.0
 
 //------------------------------------------------------------------------
 
