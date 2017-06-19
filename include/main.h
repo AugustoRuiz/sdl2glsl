@@ -2,8 +2,8 @@
 #include <fstream>
 #include <streambuf>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"
@@ -15,6 +15,6 @@
 #include <OpenGL/gl.h>
 #endif //!ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 #else
-#include <SDL2/SDL_opengl.h>
-#include <SDL2/SDL_opengl_glext.h>
+#include <SDL_opengl.h>
+#include <SDL_opengl_glext.h>
 #endif

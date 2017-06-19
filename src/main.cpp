@@ -223,7 +223,7 @@ int main(int argc, char **argv){
 	int useShader = 0;
 	SDL_Rect targetRect;
 
-	targetRect.x = 0; targetRect.y=0; targetRect.w=16; targetRect.h=16;
+	targetRect.x = 0; targetRect.y=0; targetRect.w=32; targetRect.h=32;
 
 	struct sprite sprites[MAX_SPRITES];
 
