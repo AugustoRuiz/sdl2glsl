@@ -176,8 +176,26 @@ void presentBackBuffer(SDL_Renderer *renderer, SDL_Window* win, SDL_Texture* bac
 	}
 }
 
+#ifdef __APPLE__
+void initializeFileSystem() {
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	char path[PATH_MAX];
+	if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+	{
+		std::cerr << "Couldn't get file system representation! " << std::endl;
+	}
+	CFRelease(resourcesURL);
+	chdir(path);
+}
+#endif
+
 int main(int argc, char **argv){
 	GLuint programId;
+
+#ifdef __APPLE__
+	initializeFileSystem();
+#endif
 
 	if (SDL_Init(SDL_INIT_EVERYTHING | SDL_VIDEO_OPENGL) != 0){
 		std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
@@ -291,7 +309,6 @@ int main(int argc, char **argv){
 		}
 	}
 
-	SDL_Delay(1000);
 	SDL_DestroyTexture(texTarget);
 	SDL_DestroyTexture(bmpTex);
 	SDL_DestroyRenderer(renderer);
